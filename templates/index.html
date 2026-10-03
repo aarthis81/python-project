@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus Lost & Found</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; color: #222; }
+    header { background: #2b5cff; color: white; padding: 24px 16px; text-align: center; }
+    header h1 { margin: 0 0 4px; }
+    header p { margin: 0; opacity: .9; }
+    .wrap { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+    .card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    form.row { display: flex; flex-wrap: wrap; gap: 8px; }
+    input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; flex: 1; min-width: 140px; }
+    button { padding: 10px 16px; border: 0; border-radius: 6px; background: #2b5cff;
+             color: white; font-size: 15px; cursor: pointer; }
+    button:hover { background: #1e45cc; }
+    .item { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .item h3 { margin: 0 0 4px; }
+    .meta { color: #666; font-size: 14px; }
+    .badge { padding: 3px 10px; border-radius: 12px; font-size: 13px; color: white; }
+    .lost { background: #e24b4a; }
+    .found { background: #1d9e75; }
+    .claimed { background: #888; }
+    .claim-btn { background: #444; white-space: nowrap; }
+    .empty { text-align: center; color: #666; }
+    a { color: #2b5cff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Campus Lost & Found</h1>
+    <p>Lost something? Found something? Post it here.</p>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h3>Report an item</h3>
+      <form action="/add" method="post" class="row">
+        <input name="title" placeholder="Item name" required>
+        <input name="description" placeholder="Description">
+        <input name="location" placeholder="Where?">
+        <select name="status">
+          <option value="lost">Lost</option>
+          <option value="found">Found</option>
+        </select>
+        <button>Post</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <form action="/" method="get" class="row">
+        <input name="q" placeholder="Search items..." value="{{ q }}">
+        <button>Search</button>
+        <a href="/" style="align-self:center">Clear</a>
+      </form>
+    </div>
+
+    {% for item in items %}
+      <div class="card item">
+        <div>
+          <h3>{{ item.title }} <span class="badge {{ item.status }}">{{ item.status }}</span></h3>
+          <div class="meta">{{ item.location }}</div>
+          <div>{{ item.description }}</div>
+        </div>
+        {% if item.status != 'claimed' %}
+          <form action="/claim/{{ item.id }}" method="post">
+            <button class="claim-btn">Mark as claimed</button>
+          </form>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="card empty">No items found.</div>
+    {% endfor %}
+  </div>
+</body>
+</html>
