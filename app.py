@@ -45,6 +45,24 @@ def claim(item_id):
     conn.commit()
     return redirect("/")
 
+def seed_demo_data():
+    conn = get_db()
+    count = conn.execute("SELECT COUNT(*) FROM items").fetchone()[0]
+    if count == 0:
+        demo = [
+            ("Black wallet", "Brown stitching", "Library", "lost"),
+            ("Blue water bottle", "Sipper type", "Canteen", "found"),
+            ("ID card", "Name starts with R", "Block C", "lost"),
+            ("Calculator", "Casio, scratched back", "Lab 2", "found"),
+            ("Umbrella", "Black, big", "Bus stop", "lost"),
+            ("Earphones", "White, in a case", "Seminar hall", "found"),
+        ]
+        conn.executemany(
+            "INSERT INTO items (title, description, location, status) VALUES (?,?,?,?)", demo)
+        conn.commit()
+
+init_db()
+seed_demo_data()
+
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
